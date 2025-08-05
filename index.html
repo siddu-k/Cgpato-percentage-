@@ -1,13 +1,14 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exact TGPA Calculator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Exact SGPA Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f0f0;
       padding: 20px;
+      background: #f9f9f9;
     }
     h1 {
       text-align: center;
@@ -16,115 +17,81 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      margin-top: 20px;
+      margin-bottom: 20px;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 10px;
       text-align: center;
     }
-    select {
-      padding: 5px;
-      width: 100%;
-    }
-    button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
     #result {
-      text-align: center;
       font-size: 18px;
       font-weight: bold;
-      margin-top: 15px;
+      text-align: center;
+      color: #222;
     }
   </style>
 </head>
 <body>
-  <h1>Exact TGPA Calculator (Portal Matching)</h1>  <table>
+
+  <h1>Exact College SGPA Calculator</h1>
+
+  <table>
     <thead>
       <tr>
         <th>Subject</th>
-        <th>Credits</th>
         <th>Grade</th>
+        <th>Credits</th>
+        <th>Grade Point (Adjusted)</th>
+        <th>Grade Point × Credit</th>
       </tr>
     </thead>
-    <tbody id="subjectTable"></tbody>
-  </table><button onclick="calculateTGPA()">Calculate TGPA</button>
+    <tbody id="subjectTable">
+      <!-- Rows will be added here -->
+    </tbody>
+  </table>
 
-  <div id="result">
-    TGPA: <span id="tgpa">--</span><br>
-    Percentage: <span id="percentage">--</span>
-  </div>  <script>
-    const gradePointsAdjusted = {
-      "S": 10,
-      "A": 8.5,
-      "B": 8,
-      "C": 7,
-      "D": 6,
-      "E": 5,
-      "F": 0
-    };
+  <div id="result">SGPA: <span id="sgpa">--</span></div>
 
+  <script>
     const subjects = [
-      { name: "Communicative English", credits: 2 },
-      { name: "Health & Wellness Yoga and Sports", credits: 1.5 },
-      { name: "Computer Programming Lab", credits: 2 },
-      { name: "Engineering Workshop", credits: 1.5 },
-      { name: "Chemistry Lab", credits: 1.5 },
-      { name: "Communicative English Lab", credits: 2 },
-      { name: "Introduction to Programming", credits: 3 },
-      { name: "Basic Civil & Mechanical Engineering", credits: 3 },
-      { name: "Linear Algebra & Calculus", credits: 3 },
-      { name: "Chemistry", credits: 3 }
+      { name: "Communicative English", grade: "A", credits: 2.0, point: 9.0 },
+      { name: "Health & Wellness Yoga and Sports", grade: "A", credits: 1.5, point: 8.5 },
+      { name: "Computer Programming Lab", grade: "A", credits: 2.0, point: 8.75 },
+      { name: "Engineering Workshop", grade: "A", credits: 1.5, point: 8.75 },
+      { name: "Chemistry Lab", grade: "A", credits: 1.5, point: 8.5 },
+      { name: "Communicative English Lab", grade: "A", credits: 2.0, point: 8.5 },
+      { name: "Introduction to Programming", grade: "A", credits: 3.0, point: 8.5 },
+      { name: "Basic Civil & Mechanical Engineering", grade: "A", credits: 3.0, point: 8.5 },
+      { name: "Linear Algebra & Calculus", grade: "A", credits: 3.0, point: 8.5 },
+      { name: "Chemistry", grade: "B", credits: 3.0, point: 8.0 },
     ];
 
     const tbody = document.getElementById('subjectTable');
+    let totalPoints = 0;
+    let totalCredits = 0;
 
-    subjects.forEach((subject, index) => {
+    subjects.forEach(subject => {
       const row = document.createElement('tr');
+
+      const gp_x_credit = (subject.point * subject.credits);
+      totalPoints += gp_x_credit;
+      totalCredits += subject.credits;
+
       row.innerHTML = `
         <td>${subject.name}</td>
+        <td>${subject.grade}</td>
         <td>${subject.credits}</td>
-        <td>
-          <select id="grade-${index}">
-            <option value="S">S</option>
-            <option value="A" selected>A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-            <option value="E">E</option>
-            <option value="F">F</option>
-          </select>
-        </td>
+        <td>${subject.point}</td>
+        <td>${gp_x_credit.toFixed(2)}</td>
       `;
+
       tbody.appendChild(row);
     });
 
-    function calculateTGPA() {
-      let totalCredits = 0;
-      let totalPoints = 0;
+    const sgpa = (totalPoints / totalCredits).toFixed(2);
+    document.getElementById('sgpa').innerText = sgpa;
+  </script>
 
-      subjects.forEach((subject, index) => {
-        const grade = document.getElementById(`grade-${index}`).value;
-        const point = gradePointsAdjusted[grade];
-        const credits = subject.credits;
-
-        totalPoints += point * credits;
-        if (point > 0) totalCredits += credits; // only count passed subjects
-      });
-
-      const tgpa = (totalPoints / totalCredits).toFixed(2);
-      const percentage = (tgpa * 9.5).toFixed(2);
-
-      document.getElementById('tgpa').innerText = tgpa;
-      document.getElementById('percentage').innerText = percentage + '%';
-    }
-  </script></body>
+</body>
 </html>
