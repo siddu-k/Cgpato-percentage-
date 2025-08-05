@@ -1,23 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>College-Style SGPA Calculator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exact TGPA Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
       background: #f0f0f0;
+      padding: 20px;
     }
     h1 {
       text-align: center;
+      color: #333;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 20px auto;
       background: white;
+      margin-top: 20px;
     }
     th, td {
       border: 1px solid #ccc;
@@ -33,7 +33,7 @@
       margin: 20px auto;
       padding: 10px 20px;
       font-size: 16px;
-      background: #4CAF50;
+      background-color: #4CAF50;
       color: white;
       border: none;
       cursor: pointer;
@@ -42,15 +42,12 @@
       text-align: center;
       font-size: 18px;
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
-
-  <h1>SGPA Calculator (Exact Like Portal)</h1>
-
-  <table>
+  <h1>Exact TGPA Calculator (Portal Matching)</h1>  <table>
     <thead>
       <tr>
         <th>Subject</th>
@@ -58,16 +55,13 @@
         <th>Grade</th>
       </tr>
     </thead>
-    <tbody id="subjectTable">
-      <!-- Dynamic rows -->
-    </tbody>
-  </table>
+    <tbody id="subjectTable"></tbody>
+  </table><button onclick="calculateTGPA()">Calculate TGPA</button>
 
-  <button onclick="calculateSGPA()">Calculate SGPA</button>
-
-  <div id="result">SGPA: --</div>
-
-  <script>
+  <div id="result">
+    TGPA: <span id="tgpa">--</span><br>
+    Percentage: <span id="percentage">--</span>
+  </div>  <script>
     const gradePointsAdjusted = {
       "S": 10,
       "A": 8.5,
@@ -113,23 +107,24 @@
       tbody.appendChild(row);
     });
 
-    function calculateSGPA() {
+    function calculateTGPA() {
       let totalCredits = 0;
-      let totalGradePoints = 0;
+      let totalPoints = 0;
 
       subjects.forEach((subject, index) => {
         const grade = document.getElementById(`grade-${index}`).value;
-        const gp = gradePointsAdjusted[grade];
-        const cr = subject.credits;
+        const point = gradePointsAdjusted[grade];
+        const credits = subject.credits;
 
-        totalCredits += (grade !== "F" ? cr : 0); // F doesn't count toward credit
-        totalGradePoints += gp * cr;
+        totalPoints += point * credits;
+        if (point > 0) totalCredits += credits; // only count passed subjects
       });
 
-      const sgpa = (totalCredits > 0) ? (totalGradePoints / totalCredits).toFixed(2) : "0.00";
-      document.getElementById("result").innerText = `SGPA: ${sgpa}`;
-    }
-  </script>
+      const tgpa = (totalPoints / totalCredits).toFixed(2);
+      const percentage = (tgpa * 9.5).toFixed(2);
 
-</body>
+      document.getElementById('tgpa').innerText = tgpa;
+      document.getElementById('percentage').innerText = percentage + '%';
+    }
+  </script></body>
 </html>
