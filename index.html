@@ -8,7 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      background: #f9f9f9;
+      background: #f2f2f2;
     }
     h1 {
       text-align: center;
@@ -18,11 +18,15 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
+      background: #fff;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 10px;
       text-align: center;
+    }
+    select {
+      padding: 5px;
     }
     #result {
       font-size: 18px;
@@ -34,7 +38,7 @@
 </head>
 <body>
 
-  <h1>Exact College SGPA Calculator</h1>
+  <h1>Exact SGPA Calculator (Pydah Format)</h1>
 
   <table>
     <thead>
@@ -42,55 +46,100 @@
         <th>Subject</th>
         <th>Grade</th>
         <th>Credits</th>
-        <th>Grade Point (Adjusted)</th>
+        <th>Grade Point</th>
         <th>Grade Point × Credit</th>
       </tr>
     </thead>
-    <tbody id="subjectTable">
-      <!-- Rows will be added here -->
-    </tbody>
+    <tbody id="subjectTable"></tbody>
   </table>
 
-  <div id="result">SGPA: <span id="sgpa">--</span></div>
+  <div id="result">
+    SGPA: <span id="sgpa">--</span><br />
+    Percentage: <span id="percentage">--</span>%
+  </div>
 
   <script>
+    const gradePointsMap = {
+      "S": 10,
+      "A": 9,
+      "B": 8,
+      "C": 7,
+      "D": 6,
+      "E": 5,
+      "F": 0,
+      "Ab": 0
+    };
+
     const subjects = [
-      { name: "Communicative English", grade: "A", credits: 2.0, point: 9.0 },
-      { name: "Health & Wellness Yoga and Sports", grade: "A", credits: 1.5, point: 8.5 },
-      { name: "Computer Programming Lab", grade: "A", credits: 2.0, point: 8.75 },
-      { name: "Engineering Workshop", grade: "A", credits: 1.5, point: 8.75 },
-      { name: "Chemistry Lab", grade: "A", credits: 1.5, point: 8.5 },
-      { name: "Communicative English Lab", grade: "A", credits: 2.0, point: 8.5 },
-      { name: "Introduction to Programming", grade: "A", credits: 3.0, point: 8.5 },
-      { name: "Basic Civil & Mechanical Engineering", grade: "A", credits: 3.0, point: 8.5 },
-      { name: "Linear Algebra & Calculus", grade: "A", credits: 3.0, point: 8.5 },
-      { name: "Chemistry", grade: "B", credits: 3.0, point: 8.0 },
+      { name: "Communicative English", credits: 2.0, grade: "A" },
+      { name: "Health and Wellness Yoga and Sports", credits: 1.5, grade: "A" },
+      { name: "Computer Programming Lab", credits: 2.0, grade: "A" },
+      { name: "Engineering Workshop", credits: 1.5, grade: "A" },
+      { name: "Chemistry Lab", credits: 1.5, grade: "A" },
+      { name: "Communicative English Lab", credits: 2.0, grade: "A" },
+      { name: "Introduction to Programming", credits: 3.0, grade: "A" },
+      { name: "Basic Civil & Mechanical Engineering", credits: 3.0, grade: "A" },
+      { name: "Linear Algebra & Calculus", credits: 3.0, grade: "A" },
+      { name: "Chemistry", credits: 3.0, grade: "B" },
     ];
 
     const tbody = document.getElementById('subjectTable');
-    let totalPoints = 0;
-    let totalCredits = 0;
 
-    subjects.forEach(subject => {
-      const row = document.createElement('tr');
+    function createGradeOptions(selected) {
+      return Object.keys(gradePointsMap).map(grade => 
+        `<option value="${grade}" ${grade === selected ? 'selected' : ''}>${grade}</option>`
+      ).join('');
+    }
 
-      const gp_x_credit = (subject.point * subject.credits);
-      totalPoints += gp_x_credit;
-      totalCredits += subject.credits;
+    function renderTable() {
+      tbody.innerHTML = "";
+      subjects.forEach((subject, index) => {
+        const gp = gradePointsMap[subject.grade];
+        const gpc = gp * subject.credits;
 
-      row.innerHTML = `
-        <td>${subject.name}</td>
-        <td>${subject.grade}</td>
-        <td>${subject.credits}</td>
-        <td>${subject.point}</td>
-        <td>${gp_x_credit.toFixed(2)}</td>
-      `;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${subject.name}</td>
+          <td>
+            <select onchange="updateGrade(${index}, this.value)">
+              ${createGradeOptions(subject.grade)}
+            </select>
+          </td>
+          <td>${subject.credits}</td>
+          <td id="gp-${index}">${gp}</td>
+          <td id="gpc-${index}">${gpc.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+      updateSGPA();
+    }
 
-      tbody.appendChild(row);
-    });
+    function updateGrade(index, newGrade) {
+      subjects[index].grade = newGrade;
+      const gp = gradePointsMap[newGrade];
+      const gpc = gp * subjects[index].credits;
+      document.getElementById(`gp-${index}`).innerText = gp;
+      document.getElementById(`gpc-${index}`).innerText = gpc.toFixed(2);
+      updateSGPA();
+    }
 
-    const sgpa = (totalPoints / totalCredits).toFixed(2);
-    document.getElementById('sgpa').innerText = sgpa;
+    function updateSGPA() {
+      let totalPoints = 0;
+      let totalCredits = 0;
+      subjects.forEach(subject => {
+        const gp = gradePointsMap[subject.grade];
+        totalPoints += gp * subject.credits;
+        totalCredits += subject.credits;
+      });
+
+      const sgpa = totalCredits === 0 ? 0 : totalPoints / totalCredits;
+      const percentage = (sgpa - 0.5) * 10;
+
+      document.getElementById('sgpa').innerText = sgpa.toFixed(2);
+      document.getElementById('percentage').innerText = percentage.toFixed(2);
+    }
+
+    renderTable();
   </script>
 
 </body>
