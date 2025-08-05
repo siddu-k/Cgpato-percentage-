@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SGPA Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    select, input {
+      width: 100%;
+      padding: 6px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 10px 0;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>SGPA & Percentage Calculator</h1>
+
+  <table id="subjectsTable">
+    <thead>
+      <tr>
+        <th>Subject Name</th>
+        <th>Grade</th>
+        <th>Credits</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody id="subjectBody">
+      <!-- Subject rows will appear here -->
+    </tbody>
+  </table>
+
+  <button onclick="addSubject()">+ Add Subject</button>
+  <button onclick="calculate()">Calculate SGPA</button>
+
+  <div id="result"></div>
+
+  <script>
+    const gradePoints = {
+      'S': 10,
+      'A': 9,
+      'B': 8,
+      'C': 7,
+      'D': 6,
+      'E': 5,
+      'F': 0
+    };
+
+    function addSubject() {
+      const tbody = document.getElementById('subjectBody');
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td><input type="text" placeholder="Subject Name" /></td>
+        <td>
+          <select>
+            <option value="S">S</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+          </select>
+        </td>
+        <td><input type="number" min="0" step="0.5" placeholder="Credits" /></td>
+        <td><button onclick="removeRow(this)">❌</button></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function removeRow(button) {
+      const row = button.parentElement.parentElement;
+      row.remove();
+    }
+
+    function calculate() {
+      const rows = document.querySelectorAll("#subjectBody tr");
+      let totalPoints = 0;
+      let totalCredits = 0;
+
+      rows.forEach(row => {
+        const grade = row.cells[1].querySelector('select').value;
+        const credits = parseFloat(row.cells[2].querySelector('input').value);
+
+        if (!isNaN(credits)) {
+          const point = gradePoints[grade];
+          totalPoints += point * credits;
+          if (grade !== 'F') totalCredits += credits;
+        }
+      });
+
+      const sgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+      const percentage = (sgpa * 9.5).toFixed(2);
+
+      document.getElementById('result').innerHTML = `
+        <strong>SGPA:</strong> ${sgpa} <br>
+        <strong>Percentage:</strong> ${percentage}%
+      `;
+    }
+
+    // Add a default subject row
+    addSubject();
+  </script>
+</body>
+</html>
