@@ -105,7 +105,7 @@
               ${createGradeOptions(subject.grade)}
             </select>
           </td>
-          <td>${subject.credits}</td>
+          <td id="credit-${index}">${subject.credits}</td>
           <td id="gp-${index}">${gp}</td>
           <td id="gpc-${index}">${gpc.toFixed(2)}</td>
         `;
@@ -118,6 +118,7 @@
       subjects[index].grade = newGrade;
       const gp = gradePointsMap[newGrade];
       const gpc = gp * subjects[index].credits;
+
       document.getElementById(`gp-${index}`).innerText = gp;
       document.getElementById(`gpc-${index}`).innerText = gpc.toFixed(2);
       updateSGPA();
@@ -129,12 +130,8 @@
 
       subjects.forEach(subject => {
         const gp = gradePointsMap[subject.grade];
-
-        // Exclude credit if failed
-        const effectiveCredit = (gp === 0) ? 0 : subject.credits;
-
-        totalPoints += gp * effectiveCredit;
-        totalCredits += effectiveCredit;
+        totalPoints += gp * subject.credits;
+        totalCredits += subject.credits;
       });
 
       const sgpa = totalCredits === 0 ? 0 : totalPoints / totalCredits;
