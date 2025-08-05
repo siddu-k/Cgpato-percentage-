@@ -38,7 +38,7 @@
 </head>
 <body>
 
-  <h1>Exact SGPA Calculator (Pydah Format)</h1>
+  <h1>Exact SGPA Calculator</h1>
 
   <table>
     <thead>
@@ -71,22 +71,22 @@
     };
 
     const subjects = [
-      { name: "Communicative English", credits: 2.0, grade: "A" },
-      { name: "Health and Wellness Yoga and Sports", credits: 0.5, grade: "A" },
-      { name: "Computer Programming Lab", credits: 1.5, grade: "A" },
-      { name: "Engineering Workshop", credits: 1.5, grade: "A" },
-      { name: "Chemistry Lab", credits: 1.0, grade: "A" },
-      { name: "Communicative English Lab", credits: 1.0, grade: "A" },
-      { name: "Introduction to Programming", credits: 3.0, grade: "A" },
-      { name: "Basic Civil & Mechanical Engineering", credits: 3.0, grade: "A" },
-      { name: "Linear Algebra & Calculus", credits: 3.0, grade: "A" },
-      { name: "Chemistry", credits: 3.0, grade: "B" },
+      { name: "Subject 1", credits: 2.0, grade: "A" },
+      { name: "Subject 2", credits: 0.5, grade: "B" },
+      { name: "Subject 3", credits: 1.5, grade: "A" },
+      { name: "Subject 4", credits: 1.5, grade: "A" },
+      { name: "Subject 5", credits: 1.0, grade: "A" },
+      { name: "Subject 6", credits: 1.0, grade: "A" },
+      { name: "Subject 7", credits: 3.0, grade: "A" },
+      { name: "Subject 8", credits: 3.0, grade: "A" },
+      { name: "Subject 9", credits: 3.0, grade: "C" },
+      { name: "Subject 10", credits: 3.0, grade: "B" },
     ];
 
     const tbody = document.getElementById('subjectTable');
 
     function createGradeOptions(selected) {
-      return Object.keys(gradePointsMap).map(grade => 
+      return Object.keys(gradePointsMap).map(grade =>
         `<option value="${grade}" ${grade === selected ? 'selected' : ''}>${grade}</option>`
       ).join('');
     }
@@ -126,10 +126,15 @@
     function updateSGPA() {
       let totalPoints = 0;
       let totalCredits = 0;
+
       subjects.forEach(subject => {
         const gp = gradePointsMap[subject.grade];
-        totalPoints += gp * subject.credits;
-        totalCredits += subject.credits;
+
+        // Exclude credit if failed
+        const effectiveCredit = (gp === 0) ? 0 : subject.credits;
+
+        totalPoints += gp * effectiveCredit;
+        totalCredits += effectiveCredit;
       });
 
       const sgpa = totalCredits === 0 ? 0 : totalPoints / totalCredits;
